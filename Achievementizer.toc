@@ -1,0 +1,11 @@
+## Interface: 90100
+## Title: Achievementizer
+## Author: Divergentcurl
+## Version: 1.0.0
+## SavedVariables: AchievementizerData
+
+database.lua
+frameFactory.lua
+todoFrame.lua
+mainFrame.lua
+main.lua
