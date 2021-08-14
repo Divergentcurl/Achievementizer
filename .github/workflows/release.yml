@@ -12,14 +12,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: ${{ github.event.repository.name }}
 
       - name: Zip the addon files (max compression)
-        run: zip -9 ${{ github.event.repository.name }}-${{github.event.inputs.version}} ${{ github.event.repository.name }}
+        run: |
+          mkdir ${{ github.event.repository.name }}
+          cp -p *.lua *.toc LICENSE ${{ github.event.repository.name }}
+          zip -9 ${{ github.event.repository.name }}-${{github.event.inputs.version}}.zip ${{ github.event.repository.name }}
 
       - name: Create changelog file (commit messages since last release)
-        run: git log $(git describe --tags --abbrev=0)..HEAD --format=%s > changelog_${{github.event.inputs.version}}.txt
+        run: |
+          git fetch --tags
+          git log $(git describe --tags --abbrev=0)..HEAD --format=%s > changelog_${{github.event.inputs.version}}.txt
 
       - uses: ncipollo/release-action@v1
         with:
@@ -28,5 +31,5 @@ jobs:
           bodyFile: changelog_${{github.event.inputs.version}}.txt
           commit: main
           draft: true
-          tag: ${{ github.event.repository.name }}-${{github.event.inputs.version}}
+          tag: ${{github.event.inputs.version}}
           token: ${{ secrets.GITHUB_TOKEN }}
