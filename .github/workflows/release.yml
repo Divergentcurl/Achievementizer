@@ -1,0 +1,32 @@
+name: Release addon
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ github.event.repository.name }}
+
+      - name: Zip the addon files (max compression)
+        run: zip -9 ${{ github.event.repository.name }}-${{github.event.inputs.version}} ${{ github.event.repository.name }}
+
+      - name: Create changelog file (commit messages since last release)
+        run: git log $(git describe --tags --abbrev=0)..HEAD --format=%s > changelog_${{github.event.inputs.version}}.txt
+
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ github.event.repository.name }}-${{github.event.inputs.version}}.zip
+          artifactContentType: application/zip
+          bodyFile: changelog_${{github.event.inputs.version}}.txt
+          commit: main
+          draft: true
+          tag: ${{ github.event.repository.name }}-${{github.event.inputs.version}}
+          token: ${{ secrets.GITHUB_TOKEN }}
