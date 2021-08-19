@@ -1,11 +1,12 @@
 -- arguments to the file
-local addonName, namespace = ...
+local _addonName, namespace = ...
 
 local frameFactory = namespace.frameFactory
 
--- get the database and round function from the namespace
+-- get what we need from the namespace
 local database = namespace.database
 local round = namespace.round
+local tellPlayer = namespace.tellPlayer
 
 -- UI settings
 local todoFrameWidth = 250
@@ -45,7 +46,7 @@ function todoFrame:stickyShow()
 				local achievement = AchievementizerData.achievements[todo.id]
 
 				if achievement == nil then
-					print(addonName, "achievement not found", todo.id)
+					tellPlayer("achievement not found", todo.id)
 				else
 					local color = database:getAchievementColor(achievement.completedByPercentage)
 					local achievementLink = GetAchievementLink(achievement.id) -- this can be nil apparently
@@ -121,7 +122,7 @@ function todoFrame:stickyShow()
 					end
 				end
 			else
-				print(addonName, "Unkown todo type", todo.todoType)
+				tellPlayer("Unkown todo type", todo.todoType)
 			end
 		end
 	end
@@ -259,6 +260,6 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 			self:stickyShow()
 		end
 	else
-		print(addonName, "Unknown event", event)
+		tellPlayer("Unknown event", event)
 	end
 end)

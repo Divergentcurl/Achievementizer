@@ -1,11 +1,12 @@
 -- arguments to the file
 local addonName, namespace = ...
 
--- get the frames and database and round function from the namespace
+-- get what we need from the namespace
 local todoFrame = namespace.todoFrame
 local mainFrame = namespace.mainFrame
 local database = namespace.database
 local round = namespace.round
+local tellPlayer = namespace.tellPlayer
 
 -- workaround to get factions in event
 local tempFactionPool = {}
@@ -272,7 +273,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 		AchievementFrame_LoadTextures_AI = AchievementFrame_LoadTextures
 		AchievementFrame_LoadTextures = function() if ACHIEVEMENT_FUNCTIONS.selectedCategory == -1 then ACHIEVEMENT_FUNCTIONS.selectedCategory = "summary" end AchievementFrame_LoadTextures_AI() end
 
-		--print(addonName, "loaded")
+		--tellPlayer("loaded")
 
 		-- auto build the database if it hasn't been done in the past 16 hours for this faction (allows roughly one rebuild per day with a reasonable amount of time between them while accomodating various playstyles)
 		local faction = database:convertTitleToFaction(UnitFactionGroup("player"))
@@ -351,7 +352,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 			adjustAchievementCategoryTooltip(GetMouseFocus(), false)
 		end
 	else
-		print(addonName, "Unknown event", event)
+		tellPlayer("Unknown event", event)
 	end
 end)
 
@@ -364,7 +365,7 @@ SlashCmdList["AI"] = function(rawCommand)
 		--database:buildAchievementList()
 	--elseif command == "clear" then
 		--database:reset()
-		--print(addonName, "Database cleared")
+		--tellPlayer("Database cleared")
 		--todoFrame:stickyShow()
 	if command == "" then
 		if AchievementizerData.scanCount > 0 then
@@ -402,13 +403,13 @@ SlashCmdList["AI"] = function(rawCommand)
 				end
 			end
 
-			print(addonName, "You have", ownPoints, "points. This ranks you at number", sampleSummary.rank, "(top", sampleSummary.rankPercentage ..
+			tellPlayer("You have", ownPoints, "points. This ranks you at number", sampleSummary.rank, "(top", sampleSummary.rankPercentage ..
 				"%) compared to the sample of", AchievementizerData.scanCount, "players (max", sampleSummary.maxPoints ..
 				", min", sampleSummary.minPoints, "points, oldest data is", stalenessText, "old, Alliance:", sampleSummary.playerCountA ..
 				", Horde:", sampleSummary.playerCountH .. ").")
 
 			if sampleSummary.rank > 1 then
-				print(addonName, "You need", sampleSummary.pointsToRankUp, "points to gain a rank.")
+				tellPlayer("You need", sampleSummary.pointsToRankUp, "points to gain a rank.")
 			end
 		end
 
@@ -441,7 +442,7 @@ SlashCmdList["AI"] = function(rawCommand)
 
 		mainFrame:showAchievements(accountWidePopularNotCompletedAchievements)
 	else
-		print(addonName, 'Command unknown: "' .. command .. '".')
+		tellPlayer('Command unknown: "' .. command .. '".')
 		print("Available commands: ")
 		print('-"" (shows popular incomplete achievements)')
 		print('-"done" (shows impopular completed achievements)')

@@ -21,6 +21,13 @@ end
 -- make round available to other files in the addon
 namespace.round = round
 
+-- a prettier log function than print
+local function tellPlayer(...)
+	print("|cffFFFF0C"..addonName.."|r", ...)
+end
+
+namespace.tellPlayer = tellPlayer
+
 database.factions = {
 	Alliance = 1,
 	Horde = 2,
@@ -71,7 +78,7 @@ function database:buildAchievementList()
 	local factionTitle = UnitFactionGroup("player")
 	local faction = self:convertTitleToFaction(factionTitle)
 
-	print(addonName, "Building database for", categoryCount, "categories and faction", factionTitle)
+	tellPlayer("Building database for", categoryCount, "categories and faction", factionTitle)
 
 	-- put all current achievement ids in a list of ids of achievements that need to be removed later (so achievements removed by Blizzard will be removed here as well)
 	for id, achievement in pairs(AchievementizerData.achievements) do
@@ -117,7 +124,7 @@ local function finishBuildAchievementList()
 
 	isBuildingAchievementList = false
 
-	print(addonName, "Database built")
+	tellPlayer("Database built")
 end
 
 function database:buildAchievementListForNextCategory()
@@ -583,9 +590,9 @@ function database:addTodo(id, todoType, playerGuid)
 		local message = "You have already added this"
 
 		if playerGuid == nil then
-			print(addonName, message, todoType .. ":", id)
+			tellPlayer(message, todoType .. ":", id)
 		else
-			print(addonName, message, todoType .. " for this character:", id)
+			tellPlayer(message, todoType .. " for this character:", id)
 		end
 	end
 end
