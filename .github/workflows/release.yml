@@ -30,6 +30,5 @@ jobs:
           artifactContentType: application/zip
           bodyFile: changelog_${{github.event.inputs.version}}.txt
           commit: main
-          draft: true
           tag: ${{github.event.inputs.version}}
           token: ${{ secrets.GITHUB_TOKEN }}
