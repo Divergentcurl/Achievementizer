@@ -97,13 +97,38 @@ function todoFrame:stickyShow()
 						end
 					end
 
+					local hiddenTimedCriterium = hiddenTimedCriteria[todo.id]
+
+					-- assume hidden and visible criteria are not mixed
+					if numCriteria == 0 and not hiddenTimedCriterium then
+						-- number of visible criteria is 0, but perhaps there are hidden criteria
+						-- these do not have a nice criteriaString, so show only the percentage completed, unless it is a timed criterium
+						for criteriaIndex = 1, 999 do
+							local success, _criteriaString, _criteriaType, criteriaCompleted = pcall(GetAchievementCriteriaInfo, todo.id, criteriaIndex, true)
+
+							if not success then
+								break
+							end
+
+							color = "ffffffff"
+							numCriteria = numCriteria + 1
+
+							if criteriaCompleted then
+								completedCriteria = completedCriteria + 1
+							end
+						end
+					end
+
+					-- do not show percentage when there is only 1 criterium in total
+					showCriteriaPercentage = showCriteriaPercentage and numCriteria > 1
+
 					-- record quantities for list achievements (if not known yet or not decreased, apparently can sometimes be 0 all of a sudden, e.g. at start of bg)
 					if showCriteriaPercentage and (not achievementQuantities[todo.id] or completedCriteria >= achievementQuantities[todo.id]) then
 						achievementQuantities[todo.id] = completedCriteria
 					end
 
 					-- show percentage if needed (and if achievement can be shown)
-					if todo.tracked and achievementLink ~= nil and showCriteriaPercentage and numCriteria > 0 then
+					if todo.tracked and achievementLink ~= nil and showCriteriaPercentage then
 						self:addText("|c" .. color .. completedCriteria .. " / " .. numCriteria .. " (" .. round(100 * completedCriteria / numCriteria) .. "%)" .. "|r")
 					end
 
@@ -112,12 +137,11 @@ function todoFrame:stickyShow()
 					end
 
 					-- show hidden timed criterium if tracked and the time hasn't run out yet (and if achievement can be shown)
-					local hiddenTimedCriterium = hiddenTimedCriteria[todo.id]
 					if todo.tracked and achievementLink ~= nil and numCriteria == 0 and hiddenTimedCriterium then
 						local elapsed = GetTime() - hiddenTimedCriterium.startTime
 
 						if elapsed <= hiddenTimedCriterium.duration and hiddenTimedCriterium.duration > 0 then
-							self:addText("|cfffffffftime: " .. round(elapsed) .. "s / " .. hiddenTimedCriterium.duration .. "s (" .. round(100 * elapsed / hiddenTimedCriterium.duration) .. "%)|r")
+							self:addText("|cffffffffTime: " .. round(elapsed) .. "s / " .. hiddenTimedCriterium.duration .. "s (" .. round(100 * elapsed / hiddenTimedCriterium.duration) .. "%)|r")
 						end
 					end
 				end
@@ -234,7 +258,7 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 				local completedCriteria = 0
 
 				for criteriaIndex = 1, numCriteria do
-					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, criteriaId, _eligible, _duration, _elapsed = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
+					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, criteriaId = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
 					local oldQuantity = criteriaQuantities[criteriaId]
 
 					if criteriaCompleted then
@@ -243,6 +267,22 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 						todo.tracked = true
 						progressMade = true
 						break
+					end
+				end
+
+				-- assume hidden and visible criteria are not mixed
+				if numCriteria == 0 then
+					-- number of visible criteria is 0, but perhaps there are hidden criteria
+					for criteriaIndex = 1, 999 do
+						local success, _criteriaString, _criteriaType, criteriaCompleted = pcall(GetAchievementCriteriaInfo, todo.id, criteriaIndex, true)
+
+						if not success then
+							break
+						end
+
+						if criteriaCompleted then
+							completedCriteria = completedCriteria + 1
+						end
 					end
 				end
 
