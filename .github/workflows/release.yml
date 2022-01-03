@@ -17,18 +17,27 @@ jobs:
 
       - name: Zip the addon files (max compression)
         run: |
-          mkdir ${{ github.event.repository.name }}
-          cp -p *.lua *.toc LICENSE ${{ github.event.repository.name }}
-          zip -r -9 ${{ github.event.repository.name }}-${{github.event.inputs.version}}.zip ${{ github.event.repository.name }}
+          mkdir ${{github.event.repository.name}}
+          cp -p *.lua *.toc LICENSE ${{github.event.repository.name}}
+          zip -r -9 ${{github.event.repository.name}}-${{github.event.inputs.version}}.zip ${{github.event.repository.name}}
 
       - name: Create changelog file (commit messages since last release)
         run: git log $(git describe --tags --abbrev=0)..HEAD --format=%s > changelog_${{github.event.inputs.version}}.txt
 
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: ${{ github.event.repository.name }}-${{github.event.inputs.version}}.zip
+          artifacts: ${{github.event.repository.name}}-${{github.event.inputs.version}}.zip
           artifactContentType: application/zip
           bodyFile: changelog_${{github.event.inputs.version}}.txt
           commit: main
           tag: ${{github.event.inputs.version}}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Update WowInterface
+        run: |
+          curl -H "x-api-token: ${{secrets.WOWINTERFACE_API_TOKEN}}" \
+            -F "id=${{secrets.WOWINTERFACE_PROJECT_ID}}" \
+            -F "version=${{github.event.inputs.version}}" \
+            -F "updatefile=@${{github.event.repository.name}}-${{github.event.inputs.version}}.zip" \
+            -F "changelog=@changelog_${{github.event.inputs.version}}.txt" \
+            https://api.wowinterface.com/addons/update
