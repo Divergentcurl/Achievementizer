@@ -73,7 +73,7 @@ function todoFrame:stickyShow()
 							completedCriteria = completedCriteria + 1
 						else
 							if bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
-								criteriaQuantities[criteriaId] = quantity
+								criteriaQuantities[todo.id .. "_" .. criteriaIndex] = quantity
 								criteriaString = quantityString .. " (" .. round(100 * quantity / reqQuantity) .. "%)"
 								showCriteriaPercentage = false
 							else
@@ -259,7 +259,7 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 
 				for criteriaIndex = 1, numCriteria do
 					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, criteriaId = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
-					local oldQuantity = criteriaQuantities[criteriaId]
+					local oldQuantity = criteriaQuantities[todo.id .. "_" .. criteriaIndex]
 
 					if criteriaCompleted then
 						completedCriteria = completedCriteria + 1
