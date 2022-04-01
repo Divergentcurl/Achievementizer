@@ -39,5 +39,5 @@ jobs:
             -F "id=${{secrets.WOWINTERFACE_PROJECT_ID}}" \
             -F "version=${{github.event.inputs.version}}" \
             -F "updatefile=@${{github.event.repository.name}}-${{github.event.inputs.version}}.zip" \
-            -F "changelog=@changelog_${{github.event.inputs.version}}.txt" \
+            -F "changelog=<changelog_${{github.event.inputs.version}}.txt" \
             https://api.wowinterface.com/addons/update
