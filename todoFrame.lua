@@ -67,7 +67,7 @@ function todoFrame:stickyShow()
 					local textsToAdd = {}
 
 					for criteriaIndex = 1, numCriteria do
-						local criteriaString, _criteriaType, criteriaCompleted, quantity, reqQuantity, _charName, flags, _assetID, quantityString, criteriaId, eligible, duration, elapsed = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
+						local criteriaString, _criteriaType, criteriaCompleted, quantity, reqQuantity, _charName, flags, _assetID, quantityString, _criteriaId, eligible, duration, elapsed = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
 
 						if criteriaCompleted then
 							completedCriteria = completedCriteria + 1
@@ -258,7 +258,7 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 				local completedCriteria = 0
 
 				for criteriaIndex = 1, numCriteria do
-					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, criteriaId = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
+					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, _criteriaId = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
 					local oldQuantity = criteriaQuantities[todo.id .. "_" .. criteriaIndex]
 
 					if criteriaCompleted then
