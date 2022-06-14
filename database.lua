@@ -63,15 +63,15 @@ local forbiddenIds = {}
 local removedIds = {}
 
 local categories = {}
-local isBuildingAchievementList = false
+database.isBuildingAchievementList = false
 
 -- populate the database with all achievements from the API, updating if already known in the db
 function database:buildAchievementList()
-	if isBuildingAchievementList then
+	if database.isBuildingAchievementList then
 		return
 	end
 
-	isBuildingAchievementList = true
+	database.isBuildingAchievementList = true
 
 	categories = GetCategoryList()
 	local categoryCount = #categories
@@ -122,7 +122,7 @@ local function finishBuildAchievementList()
 		AchievementizerData.lastBuildTimeH = GetServerTime()
 	end
 
-	isBuildingAchievementList = false
+	database.isBuildingAchievementList = false
 
 	tellPlayer("Database built")
 end

@@ -49,11 +49,13 @@ function todoFrame:stickyShow()
 					local categoryInfo = database:getAchievementCategoryInfo(todo.id)
 
 					if categoryInfo.allowed then
-						-- something is wrong as achievement should be in the database
-						tellPlayer("achievement not found", todo.id)
+						if not database.isBuildingAchievementList then
+							-- something is wrong as this achievement should be in the database
+							tellPlayer("achievement not found", todo.id)
+						end
 					else
-						-- achievement should not be in the database
-						self:removeTodo(todo.id, "achievement")
+						-- achievement should not be in the database, so remove it
+						database:removeTodo(todo.id, "achievement", database:playerGuidIfAchievementNotAccountWide(todo.id))
 					end
 				else
 					local color = database:getAchievementColor(achievement.completedByPercentage)
