@@ -144,6 +144,7 @@ function database:buildAchievementListForNextCategory()
 	-- the below doesn't work apparently (might also be slower than just trying)
 	--local categoryNumAchievements = (GetCategoryNumAchievements(categoryId))
 	--print(categoryNumAchievements)
+	-- also: apparently linked achievements are not always in the same category as their parent achievement, so get the category for each achievement separately
 
 	local indexInCategory = 1
 	local id, name, _, completed, _, _, _, _, flags = GetAchievementInfo(categoryId, indexInCategory)
@@ -177,19 +178,40 @@ function database:buildAchievementListForNextCategory()
 	end
 end
 
--- an achievement has been discovered, decide what to do with it
-function database:achievementDiscovered(id, name, completed, faction, flags)
-	-- apparently linked achievements are not always in the same category as their parent achievement, so get the category for each achievement separately
+-- check the achievement's category tree if it is allowed in the database, also return categoryTitle and parentCategoryTitle since we have that information anyway
+function database:getAchievementCategoryInfo(id)
 	local categoryId = GetAchievementCategory(id)
 	local categoryTitle, categoryParentId = GetCategoryInfo(categoryId)
 	local parentCategoryTitle = ""
+	local categoryGrandParentId
 	if categoryParentId ~= -1 then
-		parentCategoryTitle = (GetCategoryInfo(categoryParentId))
+		parentCategoryTitle, categoryGrandParentId = GetCategoryInfo(categoryParentId)
+	end
+	local grandParentCategoryTitle = ""
+	if categoryParentId ~= -1 then
+		grandParentCategoryTitle = (GetCategoryInfo(categoryGrandParentId))
 	end
 
+	local allowed = categoryTitle ~= "Legacy" and
+		parentCategoryTitle ~= "Legacy" and
+		grandParentCategoryTitle ~= "Legacy" and
+		categoryTitle ~= "Feats of Strength"and
+		parentCategoryTitle ~= "Feats of Strength" and
+		grandParentCategoryTitle ~= "Feats of Strength" and
+		categoryTitle ~= "Guild"and
+		parentCategoryTitle ~= "Guild" and
+		grandParentCategoryTitle ~= "Guild"
+
+	return { allowed = allowed, categoryTitle = categoryTitle, parentCategoryTitle = parentCategoryTitle }
+end
+
+-- an achievement has been discovered, decide what to do with it
+function database:achievementDiscovered(id, name, completed, faction, flags)
+	local categoryInfo = database:getAchievementCategoryInfo(id)
+
 	-- ignore the categories Legacy and Feats of Strength for the database (these usually cannot be obtained anyway)
-	if categoryTitle ~= "Legacy" and parentCategoryTitle ~= "Legacy" and categoryTitle ~= "Feats of Strength" and parentCategoryTitle ~= "Feats of Strength" then
-		database:saveAchievement(id, name, completed, categoryTitle, parentCategoryTitle, faction, flags)
+	if categoryInfo.allowed then
+		database:saveAchievement(id, name, completed, categoryInfo.categoryTitle, categoryInfo.parentCategoryTitle, faction, flags)
 
 		-- achievement is still in the game, remove from the list of removed achievements
 		removedIds[id] = nil
@@ -241,14 +263,11 @@ function database:completedAchievement(id)
 
 		local faction = self:convertTitleToFaction(UnitFactionGroup("player"))
 		local _, name, _, _, _, _, _, _, flags = GetAchievementInfo(id)
-		local categoryId = GetAchievementCategory(id)
-		local categoryTitle, categoryParentId = GetCategoryInfo(categoryId)
-		local parentCategoryTitle = ""
-		if categoryParentId ~= -1 then
-			parentCategoryTitle = (GetCategoryInfo(categoryParentId))
-		end
+		local categoryInfo = database:getAchievementCategoryInfo(id)
 
-		database:saveAchievement(id, name, true, categoryTitle, parentCategoryTitle, faction, flags)
+		if categoryInfo.allowed then
+			database:saveAchievement(id, name, true, categoryInfo.categoryTitle, categoryInfo.parentCategoryTitle, faction, flags)
+		end
 	else
 		-- known achievement, only need id and completed=true
 		database:saveAchievement(id, nil, true)

@@ -46,7 +46,15 @@ function todoFrame:stickyShow()
 				local achievement = AchievementizerData.achievements[todo.id]
 
 				if achievement == nil then
-					tellPlayer("achievement not found", todo.id)
+					local categoryInfo = database:getAchievementCategoryInfo(todo.id)
+
+					if categoryInfo.allowed then
+						-- something is wrong as achievement should be in the database
+						tellPlayer("achievement not found", todo.id)
+					else
+						-- achievement should not be in the database
+						self:removeTodo(todo.id, "achievement")
+					end
 				else
 					local color = database:getAchievementColor(achievement.completedByPercentage)
 					local achievementLink = GetAchievementLink(achievement.id) -- this can be nil apparently
@@ -200,11 +208,16 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 		local achievementId, added = ...
 
 		if added then
-			-- remove from Blizzard frame
-			RemoveTrackedAchievement(achievementId)
+			-- prevent adding achievements that will not be in the database (e.g. Legacy, Guild)
+			local categoryInfo = database:getAchievementCategoryInfo(achievementId)
 
-			-- and add to own frame
-			self:addTodo(achievementId, "achievement")
+			if categoryInfo.allowed then
+				-- remove from Blizzard frame
+				RemoveTrackedAchievement(achievementId)
+
+				-- and add to own frame
+				self:addTodo(achievementId, "achievement")
+			end
 		end
 	elseif event == "TRACKED_ACHIEVEMENT_UPDATE" then
 		local achievementId, _criteriaId, elapsed, duration = ...
