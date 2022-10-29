@@ -20,7 +20,6 @@ globals = {
     "SlashCmdList",
 
     -- wow globals that need to be slightly mutated
-    "ACHIEVEMENT_FUNCTIONS",
     "AchievementFrame_LoadTextures",
     "AchievementFrameCategory_StatusBarTooltip",
 }
@@ -46,8 +45,10 @@ read_globals = {
     "EVALUATION_TREE_FLAG_PROGRESS_BAR",
 
     -- wow functions / objects
+    "AchievementFrame",
+    "AchievementFrameComparisonTab_OnClick",
     "AchievementFrame_LoadUI",
-    "AchievementFrameHeaderTitle",
+    "AchievementFrame_ToggleAchievementFrame",
     "AddTrackedAchievement",
     "ClearAchievementComparisonUnit",
     "FauxScrollFrame_GetOffset",

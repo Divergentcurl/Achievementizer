@@ -1,4 +1,4 @@
-## Interface: 90207
+## Interface: 100000
 ## Title: Achievementizer
 ## Author: Divergentcurl
 ## Version: 1.0.0

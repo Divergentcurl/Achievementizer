@@ -26,6 +26,7 @@ local function removeFromScanPool()
 	return nil
 end
 
+local scanningPLayer = false
 local lastScanned = nil
 local function scanPlayerMaybe(unitId)
 	local scanNow = false
@@ -67,10 +68,9 @@ local function scanPlayerMaybe(unitId)
 	end
 
 	if scanNow then
-		-- fix Blizzard errors when scanning players by ensuring that selectedCategory has a numeric value (the same as during a comparison, see Blizzard_AchievementUI.lua)
-		if ACHIEVEMENT_FUNCTIONS.selectedCategory == "summary" then
-			ACHIEVEMENT_FUNCTIONS.selectedCategory = -1
-		end
+		-- fix Blizzard errors when scanning players by ensuring that the local achievementFunctions is the same as during a comparison, which can only be changed like this, see Blizzard_AchievementUI.lua
+		scanningPLayer = true
+		AchievementFrameComparisonTab_OnClick(1)
 
 		ClearAchievementComparisonUnit()
 
@@ -81,9 +81,8 @@ local function scanPlayerMaybe(unitId)
 
 		if not success then
 			-- restore of: fix Blizzard errors when scanning players
-			if ACHIEVEMENT_FUNCTIONS.selectedCategory == -1 then
-				ACHIEVEMENT_FUNCTIONS.selectedCategory = "summary"
-			end
+			AchievementFrame_ToggleAchievementFrame()
+			scanningPLayer = false
 
 			addToScanPool(unitId)
 		end
@@ -221,7 +220,7 @@ local function showAndAdjustAchievementCategoryTooltip(self)
 	AchievementFrameCategory_StatusBarTooltip_AI(self)
 
 	-- only adjust tooltip when it is about individual achievements
-	if AchievementFrameHeaderTitle:GetText() == ACHIEVEMENT_TITLE then
+	if AchievementFrame.Header.Title:GetText() == ACHIEVEMENT_TITLE then
 		adjustAchievementCategoryTooltip(self, true)
 	end
 end
@@ -271,7 +270,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 		-- intercept the achievement frame LoadTextures function so we can reset the achievement functions in time (when OnShow is called, which cannot be intercepted)
 		-- this restores the fix for Blizzard errors when scanning players (see Blizzard_AchievementUI.lua)
 		AchievementFrame_LoadTextures_AI = AchievementFrame_LoadTextures
-		AchievementFrame_LoadTextures = function() if ACHIEVEMENT_FUNCTIONS.selectedCategory == -1 then ACHIEVEMENT_FUNCTIONS.selectedCategory = "summary" end AchievementFrame_LoadTextures_AI() end
+		AchievementFrame_LoadTextures = function() if scanningPLayer then AchievementFrame_ToggleAchievementFrame(); scanningPLayer = false end AchievementFrame_LoadTextures_AI() end
 
 		--tellPlayer("loaded")
 
@@ -348,7 +347,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 
 		-- adjust if a tooltip is being shown with status bar and we are looking at individual achievements
 		-- (atm the achievement category tooltips are the only ones that use this)
-		if GameTooltip:IsShown() and statusBarActive and AchievementFrameHeaderTitle and AchievementFrameHeaderTitle:GetText() == ACHIEVEMENT_TITLE then
+		if GameTooltip:IsShown() and statusBarActive and AchievementFrame and AchievementFrame.Header.Title:GetText() == ACHIEVEMENT_TITLE then
 			adjustAchievementCategoryTooltip(GetMouseFocus(), false)
 		end
 	else
