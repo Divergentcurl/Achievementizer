@@ -157,7 +157,7 @@ local function adjustAchievementCategoryTooltip(self, adjustTitleText)
 
 	-- prepare the database query
 	local faction = database:convertTitleToFaction(UnitFactionGroup("player"))
-	local isChildCategory = type(self.parentID) == "number"
+	local isChildCategory = type(self:GetParent().parentID) == "number"
 	local filter
 
 	local baseFilter = function(achievement) return not achievement.completed and (achievement.faction == database.factions.Neutral or achievement.faction == faction) end
@@ -168,7 +168,7 @@ local function adjustAchievementCategoryTooltip(self, adjustTitleText)
 
 	-- get 10 popular not done achievements for this category
 	if isChildCategory then
-		local parentCategoryTitle = (GetCategoryInfo(self.parentID))
+		local parentCategoryTitle = (GetCategoryInfo(self:GetParent().parentID))
 		filter = function(achievement) return baseFilter(achievement) and achievement.categoryTitle == self.name and achievement.parentCategoryTitle == parentCategoryTitle end
 	elseif IsShiftKeyDown() then
 		-- show only parent category
