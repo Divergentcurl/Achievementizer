@@ -83,10 +83,16 @@ function todoFrame:stickyShow()
 							completedCriteria = completedCriteria + 1
 						else
 							if bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR then
+								-- progress bar achievement like 10,000 World Quests Completed (11132), show only a single fraction and percentage
 								criteriaQuantities[todo.id .. "_" .. criteriaIndex] = quantity
 								criteriaString = quantityString .. " (" .. round(100 * quantity / reqQuantity) .. "%)"
 								showCriteriaPercentage = false
+							elseif reqQuantity > 1 then
+								-- list of progress bars like Impressing Zo'Sorg (14516), show each description, fraction, and percentage
+								criteriaQuantities[todo.id .. "_" .. criteriaIndex] = quantity
+								criteriaString = "- " .. criteriaString .. " " .. quantity .. "/" .. reqQuantity .. " (" .. round(100 * quantity / reqQuantity) .. "%)"
 							else
+								-- list of boolean requirements like Field Photographer (9924), show each description
 								criteriaString = "- " .. criteriaString
 							end
 
@@ -273,12 +279,12 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 				local completedCriteria = 0
 
 				for criteriaIndex = 1, numCriteria do
-					local _criteriaString, _criteriaType, criteriaCompleted, quantity, _reqQuantity, _charName, flags, _assetID, _quantityString, _criteriaId = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
+					local _criteriaString, _criteriaType, criteriaCompleted, quantity, reqQuantity, _charName, flags = GetAchievementCriteriaInfo(todo.id, criteriaIndex)
 					local oldQuantity = criteriaQuantities[todo.id .. "_" .. criteriaIndex]
 
 					if criteriaCompleted then
 						completedCriteria = completedCriteria + 1
-					elseif bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR and oldQuantity and quantity > oldQuantity then
+					elseif (bit.band(flags, EVALUATION_TREE_FLAG_PROGRESS_BAR) == EVALUATION_TREE_FLAG_PROGRESS_BAR or reqQuantity > 1) and oldQuantity and quantity > oldQuantity then
 						todo.tracked = true
 						progressMade = true
 						break
