@@ -1,4 +1,4 @@
-## Interface: 100005
+## Interface: 100007
 ## Title: Achievementizer
 ## Author: Divergentcurl
 ## Version: 1.0.0
