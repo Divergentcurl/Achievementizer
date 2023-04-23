@@ -12,16 +12,16 @@ globals = {
 	"AchievementizerData",
 
     -- other own global vars
-    "AchievementFrame_LoadTextures_AI",
     "AchievementFrameCategory_StatusBarTooltip_AI",
+    "UpdateMicroButtons_AI",
 
     -- slash commands
     "SLASH_AI1",
     "SlashCmdList",
 
     -- wow globals that need to be slightly mutated
-    "AchievementFrame_LoadTextures",
     "AchievementFrameCategory_StatusBarTooltip",
+    "UpdateMicroButtons",
 }
 
 read_globals = {
@@ -46,9 +46,9 @@ read_globals = {
 
     -- wow functions / objects
     "AchievementFrame",
+    "AchievementFrameBaseTab_OnClick",
     "AchievementFrameComparisonTab_OnClick",
     "AchievementFrame_LoadUI",
-    "AchievementFrame_ToggleAchievementFrame",
     "AddTrackedAchievement",
     "ClearAchievementComparisonUnit",
     "FauxScrollFrame_GetOffset",

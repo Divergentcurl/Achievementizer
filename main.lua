@@ -39,8 +39,8 @@ local function scanPlayerMaybe(unitId)
 
 			if playerGuid ~= nil and AchievementizerData.scanned[playerGuid] == nil then
 				-- not scanned before, scan now or later
-				if lastScanned == nil or GetServerTime() - lastScanned > 0 then
-					-- 1 second or more has elapsed since the last scan, scan now
+				if (lastScanned == nil or GetServerTime() - lastScanned > 0) and not AchievementFrame:IsShown() then
+					-- 1 second or more has elapsed since the last scan and not viewing achievements, scan now
 					scanNow = true
 					--print("scan now", unitId)
 
@@ -81,7 +81,7 @@ local function scanPlayerMaybe(unitId)
 
 		if not success then
 			-- restore of: fix Blizzard errors when scanning players
-			AchievementFrame_ToggleAchievementFrame()
+			AchievementFrameBaseTab_OnClick(1)
 			scanningPLayer = false
 
 			addToScanPool(unitId)
@@ -269,8 +269,8 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 
 		-- intercept the achievement frame LoadTextures function so we can reset the achievement functions in time (when OnShow is called, which cannot be intercepted)
 		-- this restores the fix for Blizzard errors when scanning players (see Blizzard_AchievementUI.lua)
-		AchievementFrame_LoadTextures_AI = AchievementFrame_LoadTextures
-		AchievementFrame_LoadTextures = function() if scanningPLayer then AchievementFrame_ToggleAchievementFrame(); scanningPLayer = false end AchievementFrame_LoadTextures_AI() end
+		UpdateMicroButtons_AI = UpdateMicroButtons
+		UpdateMicroButtons = function() if scanningPLayer and AchievementFrame:IsShown() then AchievementFrameBaseTab_OnClick(1); scanningPLayer = false end UpdateMicroButtons_AI() end
 
 		--tellPlayer("loaded")
 
