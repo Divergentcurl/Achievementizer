@@ -1,5 +1,6 @@
 ## Interface: 100100
 ## Title: Achievementizer
+## IconTexture: Interface\Icons\achievement_challengemode_arakkoaspires_gold
 ## Author: Divergentcurl
 ## Version: 1.0.0
 ## SavedVariables: AchievementizerData
