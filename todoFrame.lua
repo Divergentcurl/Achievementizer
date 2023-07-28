@@ -212,19 +212,19 @@ todoFrame:SetScript("OnHyperlinkClick", function(self, link, _text, button)
 end)
 
 todoFrame:SetScript("OnEvent", function(self, event, ...)
-	if event == "TRACKED_ACHIEVEMENT_LIST_CHANGED" then
-		local achievementId, added = ...
+	if event == "CONTENT_TRACKING_UPDATE" then
+		local type, id, isTracked = ...
 
-		if added then
+		if type == Enum.ContentTrackingType.Achievement and isTracked then
 			-- prevent adding achievements that will not be in the database (e.g. Legacy, Guild)
-			local categoryInfo = database:getAchievementCategoryInfo(achievementId)
+			local categoryInfo = database:getAchievementCategoryInfo(id)
 
 			if categoryInfo.allowed then
 				-- remove from Blizzard frame
-				RemoveTrackedAchievement(achievementId)
+				C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id)
 
 				-- and add to own frame
-				self:addTodo(achievementId, "achievement")
+				self:addTodo(id, "achievement")
 			end
 		end
 	elseif event == "TRACKED_ACHIEVEMENT_UPDATE" then

@@ -44,6 +44,6 @@ mainFrame:SetScript("OnHyperlinkClick", function(_self, link, _text, button)
 		OpenAchievementFrameToAchievement(tonumber(achievementId))
 	elseif button == "RightButton" then
 		-- add to list
-		AddTrackedAchievement(tonumber(achievementId))
+		C_ContentTracking.StartTracking(Enum.ContentTrackingType.Achievement, tonumber(achievementId))
 	end
 end)

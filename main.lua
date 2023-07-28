@@ -247,7 +247,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 			self:RegisterEvent("GROUP_ROSTER_UPDATE")
 			self:RegisterEvent("INSPECT_ACHIEVEMENT_READY")
 			self:RegisterEvent("ACHIEVEMENT_EARNED")
-			todoFrame:RegisterEvent("TRACKED_ACHIEVEMENT_LIST_CHANGED")
+			todoFrame:RegisterEvent("CONTENT_TRACKING_UPDATE")
 		end
 	elseif event == "PLAYER_LOGIN" then
 		-- only register these events when all information about achievements is available, it is ok to miss a few fires of these events
