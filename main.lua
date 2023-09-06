@@ -360,12 +360,6 @@ SLASH_AI1 = "/ai"
 SlashCmdList["AI"] = function(rawCommand)
 	local command = string.lower(rawCommand)
 
-	--if command == "build" then
-		--database:buildAchievementList()
-	--elseif command == "clear" then
-		--database:reset()
-		--tellPlayer("Database cleared")
-		--todoFrame:stickyShow()
 	if command == "" then
 		if AchievementizerData.scanCount > 0 then
 			local ownPoints = GetTotalAchievementPoints()
@@ -440,6 +434,12 @@ SlashCmdList["AI"] = function(rawCommand)
 		}
 
 		mainFrame:showAchievements(accountWidePopularNotCompletedAchievements)
+	--elseif command == "build" then
+		--database:buildAchievementList()
+	--elseif command == "clear" then
+		--database:reset()
+		--tellPlayer("Database cleared")
+		--todoFrame:stickyShow()
 	else
 		tellPlayer('Command unknown: "' .. command .. '".')
 		print("Available commands: ")
