@@ -221,7 +221,7 @@ todoFrame:SetScript("OnEvent", function(self, event, ...)
 
 			if categoryInfo.allowed then
 				-- remove from Blizzard frame
-				C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id)
+				C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id, Enum.ContentTrackingStopType.Manual)
 
 				-- and add to own frame
 				self:addTodo(id, "achievement")
