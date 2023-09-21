@@ -50,8 +50,9 @@ function todoFrame:stickyShow()
 
 					if categoryInfo.allowed then
 						if not database.isBuildingAchievementList then
-							-- something is wrong as this achievement should be in the database
-							tellPlayer("achievement not found", todo.id)
+							-- something is wrong as this achievement should be in the database, better to remove it to prevent spam
+							database:removeTodo(todo.id, "achievement", database:playerGuidIfAchievementNotAccountWide(todo.id))
+							tellPlayer("achievement not found, removed from todo list", todo.id)
 						end
 					else
 						-- achievement should not be in the database, so remove it
