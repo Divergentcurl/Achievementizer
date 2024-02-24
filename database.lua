@@ -141,40 +141,38 @@ function database:buildAchievementListForNextCategory()
 	local factionTitle = UnitFactionGroup("player")
 	local faction = self:convertTitleToFaction(factionTitle)
 
-	-- the below doesn't work apparently (might also be slower than just trying)
-	--local categoryNumAchievements = (GetCategoryNumAchievements(categoryId))
+	local categoryNumAchievements = (GetCategoryNumAchievements(categoryId, false))
 	--print(categoryNumAchievements)
-	-- also: apparently linked achievements are not always in the same category as their parent achievement, so get the category for each achievement separately
+	-- apparently linked achievements are not always in the same category as their parent achievement, so get the category for each achievement separately
 
-	local indexInCategory = 1
-	local id, name, _, completed, _, _, _, _, flags = GetAchievementInfo(categoryId, indexInCategory)
-	while id ~= nil do
-		--print(indexInCategory, id, name)
+	for indexInCategory = 1, categoryNumAchievements do
+		local id, name, _, completed, _, _, _, _, flags = GetAchievementInfo(categoryId, indexInCategory)
 
-		database:achievementDiscovered(id, name, completed, faction, flags)
+		if id ~= nil then
+			--print(indexInCategory, id, name)
 
-		-- get any previous achievements in the chain
-		local linkedAchievementId = GetPreviousAchievement(id)
-		while linkedAchievementId ~= nil do
-			_, name, _, completed, _, _, _, _, flags = GetAchievementInfo(linkedAchievementId)
-			--print("Prev achieve", linkedAchievementId, name)
+			database:achievementDiscovered(id, name, completed, faction, flags)
 
-			database:achievementDiscovered(linkedAchievementId, name, completed, faction, flags)
-			linkedAchievementId = GetPreviousAchievement(linkedAchievementId)
+			-- get any previous achievements in the chain
+			local linkedAchievementId = GetPreviousAchievement(id)
+			while linkedAchievementId ~= nil do
+				_, name, _, completed, _, _, _, _, flags = GetAchievementInfo(linkedAchievementId)
+				--print("Prev achieve", linkedAchievementId, name)
+
+				database:achievementDiscovered(linkedAchievementId, name, completed, faction, flags)
+				linkedAchievementId = GetPreviousAchievement(linkedAchievementId)
+			end
+
+			-- get any next achievements in the chain (starting from the original achievement, from before the GetPreviousAchievement block)
+			linkedAchievementId = GetNextAchievement(id)
+			while linkedAchievementId ~= nil do
+				_, name, _, completed, _, _, _, _, flags = GetAchievementInfo(linkedAchievementId)
+				--print("Next achieve", linkedAchievementId, name)
+
+				database:achievementDiscovered(linkedAchievementId, name, completed, faction, flags)
+				linkedAchievementId = GetNextAchievement(linkedAchievementId)
+			end
 		end
-
-		-- get any next achievements in the chain (starting from the original achievement, from before the GetPreviousAchievement block)
-		linkedAchievementId = GetNextAchievement(id)
-		while linkedAchievementId ~= nil do
-			_, name, _, completed, _, _, _, _, flags = GetAchievementInfo(linkedAchievementId)
-			--print("Next achieve", linkedAchievementId, name)
-
-			database:achievementDiscovered(linkedAchievementId, name, completed, faction, flags)
-			linkedAchievementId = GetNextAchievement(linkedAchievementId)
-		end
-
-		indexInCategory = indexInCategory + 1
-		id, name, _, completed, _, _, _, _, flags = GetAchievementInfo(categoryId, indexInCategory)
 	end
 end
 

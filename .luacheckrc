@@ -64,6 +64,7 @@ read_globals = {
     "GetAchievementNumCriteria",
     "GetCategoryInfo",
     "GetCategoryList",
+    "GetCategoryNumAchievements",
     "GetComparisonAchievementPoints",
     "GetNextAchievement",
     "GetNumGroupMembers",
