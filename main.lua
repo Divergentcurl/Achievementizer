@@ -26,7 +26,7 @@ local function removeFromScanPool()
 	return nil
 end
 
-local scanningPLayer = false
+--local scanningPLayer = false
 local lastScanned = nil
 local function scanPlayerMaybe(unitId)
 	local scanNow = false
@@ -69,7 +69,7 @@ local function scanPlayerMaybe(unitId)
 
 	if scanNow then
 		-- fix Blizzard errors when scanning players by ensuring that the local achievementFunctions is the same as during a comparison, which can only be changed like this, see Blizzard_AchievementUI.lua
-		scanningPLayer = true
+		--scanningPLayer = true
 		AchievementFrameComparisonTab_OnClick(1)
 
 		ClearAchievementComparisonUnit()
@@ -82,7 +82,7 @@ local function scanPlayerMaybe(unitId)
 		if not success then
 			-- restore of: fix Blizzard errors when scanning players
 			AchievementFrameBaseTab_OnClick(1)
-			scanningPLayer = false
+			--scanningPLayer = false
 
 			addToScanPool(unitId)
 		end
@@ -267,10 +267,10 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 		-- now that we have modified the tooltip we can also react to modifier keys to update it
 		self:RegisterEvent("MODIFIER_STATE_CHANGED")
 
-		-- intercept the achievement frame LoadTextures function so we can reset the achievement functions in time (when OnShow is called, which cannot be intercepted)
+		-- intercept the achievement frame OnShow function so we can reset the achievement functions in time
 		-- this restores the fix for Blizzard errors when scanning players (see Blizzard_AchievementUI.lua)
-		UpdateMicroButtons_AI = UpdateMicroButtons
-		UpdateMicroButtons = function() if scanningPLayer and AchievementFrame:IsShown() then AchievementFrameBaseTab_OnClick(1); scanningPLayer = false end UpdateMicroButtons_AI() end
+		--AchievementFrame_OnShow_AI = AchievementFrame_OnShow
+		--AchievementFrame_OnShow = function() if scanningPLayer and AchievementFrame:IsShown() then AchievementFrameBaseTab_OnClick(1); scanningPLayer = false end AchievementFrame_OnShow_AI() end
 
 		--tellPlayer("loaded")
 
@@ -348,7 +348,7 @@ eventFrame:SetScript("OnEvent", function(self, event, ...)
 		-- adjust if a tooltip is being shown with status bar and we are looking at individual achievements
 		-- (atm the achievement category tooltips are the only ones that use this)
 		if GameTooltip:IsShown() and statusBarActive and AchievementFrame and AchievementFrame.Header.Title:GetText() == ACHIEVEMENT_TITLE then
-			adjustAchievementCategoryTooltip(GetMouseFocus(), false)
+			adjustAchievementCategoryTooltip(GetMouseFoci()[1], false)
 		end
 	else
 		tellPlayer("Unknown event", event)

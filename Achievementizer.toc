@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110000
 ## Title: Achievementizer
 ## IconTexture: Interface\Icons\achievement_challengemode_arakkoaspires_gold
 ## Author: Divergentcurl

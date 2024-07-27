@@ -13,7 +13,7 @@ globals = {
 
     -- other own global vars
     "AchievementFrameCategory_StatusBarTooltip_AI",
-    "UpdateMicroButtons_AI",
+    "AchievementFrame_OnShow_AI",
 
     -- slash commands
     "SLASH_AI1",
@@ -21,7 +21,7 @@ globals = {
 
     -- wow globals that need to be slightly mutated
     "AchievementFrameCategory_StatusBarTooltip",
-    "UpdateMicroButtons",
+    "AchievementFrame_OnShow",
 }
 
 read_globals = {
@@ -29,7 +29,7 @@ read_globals = {
 	"bit",
     "C_Timer",
     "CreateFrame",
-    "GetMouseFocus",
+    "GetMouseFoci",
     "GetServerTime",
     "GetTime",
     "IsAltKeyDown",
