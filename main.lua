@@ -37,7 +37,7 @@ local function scanPlayerMaybe(unitId)
 
 			local playerGuid = UnitGUID(unitId)
 
-			if playerGuid ~= nil and AchievementizerData.scanned[playerGuid] == nil then
+			if playerGuid ~= nil and not issecretvalue(playerGuid) and AchievementizerData.scanned[playerGuid] == nil then
 				-- not scanned before, scan now or later
 				if (lastScanned == nil or GetServerTime() - lastScanned > 0) and not AchievementFrame:IsShown() then
 					-- 1 second or more has elapsed since the last scan and not viewing achievements, scan now
@@ -100,7 +100,7 @@ local function adjustPlayerToolTipMaybe(playerGuidMaybe)
 	local numLines = GameTooltip:NumLines()
 	local gameTooltipText
 
-	if numLines > 0 then
+	if numLines > 0 and not issecretvalue(_G["GameTooltipTextLeft"..numLines]:GetText()) then
 		gameTooltipText = _G["GameTooltipTextLeft"..numLines]:GetText()
 
 		if gameTooltipText == "PvP" then
@@ -120,7 +120,7 @@ local function adjustPlayerToolTipMaybe(playerGuidMaybe)
 		else
 			local playerGuid = UnitGUID("mouseover")
 
-			if playerGuid == nil then
+			if playerGuid == nil and not issecretvalue(playerGuid) then
 				-- no longer mouseover of a player, maybe a guid was provided by an event
 				playerGuid = playerGuidMaybe
 				hideLater = true

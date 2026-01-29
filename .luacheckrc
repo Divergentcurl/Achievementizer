@@ -33,6 +33,7 @@ read_globals = {
     "GetServerTime",
     "GetTime",
     "IsAltKeyDown",
+    "issecretvalue",
     "IsShiftKeyDown",
     "max",
     "min",
